@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import (
+from api.views import (
     UserList,
     UserDetail,
     UserFollow,
@@ -15,7 +15,10 @@ urlpatterns = [
     path('users/<int:pk>/follow/<int:follow_id>/',
          UserFollow.as_view(), name='user-follow'),
     path('posts/', PostList.as_view(), name='post-list'),
-    path('posts/<int:pk>/', PostDetail.as_view(), name='post-detail'),
-    path('posts/<int:pk>/comments/', CommentList.as_view(), name='comment-list'),
-    path('comments/<int:pk>/', CommentDetail.as_view(), name='comment-detail'),
+    path('posts/<int:pk>/', PostDetail.as_view(),
+         name='post-detail'),
+    path('posts/<int:pk>/comments/',
+         CommentList.as_view(), name='comment-list'),
+    path('comments/<int:pk>/',
+         CommentDetail.as_view(), name='comment-detail'),
 ]
