@@ -1,4 +1,3 @@
-import json
 
 from rest_framework import serializers
 from api.models import User, Post, Comment
@@ -38,7 +37,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class PostSerializer(serializers.ModelSerializer):
-    author = UserSerializer()
+    author = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
 
     def get_author(self, obj):
         return obj.author
