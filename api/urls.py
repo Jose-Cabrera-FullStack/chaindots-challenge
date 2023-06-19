@@ -6,7 +6,6 @@ from api.views import (
     PostList,
     PostDetail,
     CommentList,
-    CommentDetail,
 )
 
 urlpatterns = [
@@ -19,6 +18,4 @@ urlpatterns = [
          name='post-detail'),
     path('posts/<int:pk>/comments/',
          CommentList.as_view(), name='comment-list'),
-    path('comments/<int:pk>/',
-         CommentDetail.as_view(), name='comment-detail'),
 ]

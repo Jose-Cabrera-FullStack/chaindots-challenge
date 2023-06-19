@@ -4,7 +4,7 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 
 from api.models import User, Post, Comment
-from api.serializers import UserSerializer, PostSerializer, CommentSerializer
+from api.serializers import CommentReadSerializer, CommentWriteSerializer, UserSerializer, PostSerializer
 
 
 class UserList(generics.ListCreateAPIView):
@@ -68,7 +68,7 @@ class PostList(generics.ListCreateAPIView):
         if to_date:
             queryset = queryset.filter(created_at__lte=to_date)
 
-        return queryset.select_related("author").order_by('-created_at')
+        return queryset.select_related("author", "comment_set").order_by('-created_at')
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -85,19 +85,15 @@ class PostDetail(generics.RetrieveAPIView):
 
 class CommentList(generics.ListCreateAPIView):
     queryset = Comment.objects.all()
-    serializer_class = CommentSerializer
 
     def get_queryset(self):
         queryset = super().get_queryset()
         post_id = self.kwargs.get('pk')
         return queryset.select_related('author', 'post').filter(post_id=post_id)
 
-
-class CommentDetail(generics.RetrieveAPIView):
-    queryset = Comment.objects.all()
-    serializer_class = CommentSerializer
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        comment_id = self.kwargs.get('pk')
-        return queryset.select_related('author', 'post').filter(id=comment_id)
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return CommentReadSerializer
+        elif self.request.method == 'POST':
+            return CommentWriteSerializer
+        return CommentReadSerializer

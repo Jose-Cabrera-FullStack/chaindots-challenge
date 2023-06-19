@@ -44,18 +44,25 @@ class PostSerializer(serializers.ModelSerializer):
         return obj.author
 
     def get_comments(self, obj):
-        return CommentSerializer(obj.comment_set.all(), many=True).data
+        return CommentWriteSerializer(obj.comment_set.all(), many=True).data
 
     class Meta:
         model = Post
         fields = '__all__'
 
 
-class CommentSerializer(serializers.ModelSerializer):
+class CommentReadSerializer(serializers.ModelSerializer):
     author = UserSerializer()
+    post = PostSerializer()
 
-    def get_author(self, obj):
-        return obj.author
+    class Meta:
+        model = Comment
+        fields = '__all__'
+
+
+class CommentWriteSerializer(serializers.ModelSerializer):
+    author = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    post = serializers.PrimaryKeyRelatedField(queryset=Post.objects.all())
 
     class Meta:
         model = Comment
