@@ -41,7 +41,7 @@ Run the development server:
 ```bash
 $ python manage.py runserver
 ```
-The API should now be running locally at http://localhost:8000/.
+The API should now be running locally at http://127.0.0.1:8000/api/users.
 
 # API Endpoints
 ```bash
@@ -57,14 +57,22 @@ POST /api/posts/{id}/comments/: Add a new comment to a post.
 ```
 **Note**: *All endpoints require authentication using token-based authentication.*
 
-# Authentication
-Token-based authentication is used to authenticate API requests. To authenticate, include the token in the request header:
-
-makefile
-
 # Authorization
+Token-based authentication is used to authenticate API requests. To authenticate, include the token in the request header.
+
 Token "token-value"
 To obtain a token, you can use the Django shell or authenticate through a login endpoint.
+
+To create a token using the Django shell, run the following command:
+
+```bash
+$ python manage.py drf_create_token <username>
+
+output:
+    python manage.py drf_create_token user1
+    Generated token 7baa3db5c2f07f617c87616716e689ca7c6692a8 for user user1
+```
+**Note**: You can use Postman to authenticate through a create user endpoint. To do so, send a POST request to http://127.0.0.1:8000/api/users with the username, password and followers list (could be an empty list) in the request body. The response will include the token.
 
 # Running Tests:
 To run the unit tests for the API endpoints and ORM queries, use the following command:
