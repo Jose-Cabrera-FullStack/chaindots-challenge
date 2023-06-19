@@ -4,7 +4,13 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 
 from api.models import User, Post, Comment
-from api.serializers import CommentReadSerializer, CommentWriteSerializer, UserSerializer, PostSerializer
+from api.serializers import (
+    CommentReadSerializer,
+    CommentWriteSerializer,
+    PostReadSerializer,
+    PostWriteSerializer,
+    UserSerializer
+)
 
 
 class UserList(generics.ListCreateAPIView):
@@ -51,7 +57,7 @@ class UserFollow(generics.CreateAPIView):
 
 class PostList(generics.ListCreateAPIView):
     queryset = Post.objects.all()
-    serializer_class = PostSerializer
+    serializer_class = PostWriteSerializer
 
     def get_queryset(self):
 
@@ -68,7 +74,7 @@ class PostList(generics.ListCreateAPIView):
         if to_date:
             queryset = queryset.filter(created_at__lte=to_date)
 
-        return queryset.select_related("author", "comment_set").order_by('-created_at')
+        return queryset.select_related("author").prefetch_related("comment_set").order_by('-created_at')
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -80,7 +86,13 @@ class PostList(generics.ListCreateAPIView):
 
 class PostDetail(generics.RetrieveAPIView):
     queryset = Post.objects.all()
-    serializer_class = PostSerializer
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return PostReadSerializer
+        elif self.request.method == 'POST':
+            return PostWriteSerializer
+        return PostReadSerializer
 
 
 class CommentList(generics.ListCreateAPIView):
